@@ -1,0 +1,25 @@
+<div class="wrapper">
+  {% include "header.html" %}
+  <section id="checkout-background" class="checkout-background content">
+    <div class="container pt-5 pb-5" style="max-width: 450px">
+      {% if product %}
+      <div class="alert alert-warning alert-dismissible" role="alert">
+        <img
+          src="/{{product.product_image}}"
+          class="d-block w-50 h-50 ms-5"
+          alt="dress"
+        /><br />
+        {{product.product_display_title}} has successfully been purchased.
+        <br />Thank you for shopping with us!
+      </div>
+      {% else %} {% with messages = get_flashed_messages() %}<br />
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible" role="alert">
+        {{ message|safe }}
+      </div>
+      {% endfor %} {% endif %} {% endwith %} {% endif %}
+    </div>
+  </section>
+</div>
+
+{% include "footer.html" %}

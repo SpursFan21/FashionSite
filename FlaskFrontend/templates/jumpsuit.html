@@ -1,0 +1,44 @@
+{% include "header.html" %}
+<div class="album py-5 bg-light">
+  <p class="wordings">
+    Stylish selection of jumpsuits. Great range of colours and dependable
+    sizing. We will keep you looking your best through every season.
+  </p>
+  <div class="album py-5 bg-body-tertiary">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-l- row-cols-md-3 g-3 mb-2">
+        {% if jumpsuit_category_products %} {% for product in
+        jumpsuit_category_products %}
+        <div class="col">
+          <div class="card shadow-m">
+            <img
+              src="{{product.product_image}}"
+              class="d-block w-100"
+              alt="jumpsuit"
+            />
+            <div class="card-body">
+              <p class="card-text">
+                {{product.product_display_title}}<br />NZD{{
+                product.product_price}}
+              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a
+                    href="/product/{{product.id}}"
+                    class="btn btn-sm btn-outline-secondary"
+                  >
+                    View
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %} {% else %} "Sorry, there are no products to display at this
+        time" {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include "footer.html" %}
