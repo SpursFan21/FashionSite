@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, redirect, url_for, j
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, InputRequired, Length
+import traceback
 
 
 import requests, json, os
@@ -356,60 +357,58 @@ def login():
             return render_template("login.html")
         
 
-@app.route('/register', methods=['GET','POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        #first grab all data from the form's variable i.e. the name property
-        first_name = request.form['firstName']
-        last_name = request.form['lastName']
-        email = request.form['email']
-        password = request.form['password']
-        age = int(request.form['age'])
-        gender = request.form['gender-select']
-
-        print(type(age))
-
-        # Put this and store it in the post data variable
-        new_user_post_data = {
-            "first_name": first_name,
-            "last_name": last_name,
-            "email": email,
-            "password":password,
-            "age": age,
-            "gender":gender
-        }
-
-        print(new_user_post_data)
-
-        REGISTER_NEW_USER_URL = USER_API_BASE_URL + "user"
-
-        headers = {
-            'Content-type':'application/json', 
-            'Accept':'application/json'
-        }
-
-        register_new_user_response = requests.post(
-            url=REGISTER_NEW_USER_URL,
-            headers=headers, 
-            json=new_user_post_data
-        )
-        print(register_new_user_response)
-        print(register_new_user_response.status_code)
-        #print(register_new_user_response)
-
         try:
+            # Grab data from the form
+            first_name = request.form['firstName']
+            last_name = request.form['lastName']
+            email = request.form['email']
+            password = request.form['password']
+            age = int(request.form['age'])
+            gender = request.form['gender-select']
+
+            # Validate data (basic example)
+            if age <= 0:
+                return jsonify({'success': False, 'message': 'Age must be a positive number'})
+
+            # Prepare data for API request
+            new_user_post_data = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "password": password,
+                "age": age,
+                "gender": gender
+            }
+
+            headers = {
+                'Content-type': 'application/json',
+                'Accept': 'application/json'
+            }
+
+            # Send data to external API
+            REGISTER_NEW_USER_URL = USER_API_BASE_URL + "user"
+            register_new_user_response = requests.post(
+                url=REGISTER_NEW_USER_URL,
+                headers=headers,
+                json=new_user_post_data
+            )
+
+            # Handle response
             if register_new_user_response.status_code == 201:
-                # This response message must get passed to the front end registration form
                 return jsonify({'success': True, 'message': 'User successfully registered'})
             elif register_new_user_response.status_code == 200:
-                # This response message must get passed to the front end registration form
-                return jsonify({'success': False, 'message': 'Sorry, a user with this email address already exists'})            
+                return jsonify({'success': False, 'message': 'Sorry, a user with this email address already exists'})
             else:
-                # This response message must get passed to the front end registration form
                 return jsonify({'success': False, 'message': 'Whoops something went wrong while registering this user. Try again later'})
-        except:
-            return jsonify({'success': False, 'message': 'Whoops something went wrong while registering this user. Try again later'})
         
+        except Exception as e:
+            print(f"Error: {e}")
+            print(traceback.format_exc())
+            return jsonify({'success': False, 'message': 'Whoops something went wrong while registering this user. Try again later'})
+
     return render_template("register.html")
 
 @app.route('/logout')
