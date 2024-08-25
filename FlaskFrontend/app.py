@@ -21,6 +21,7 @@ else:
     PRODUCT_CATEGORY_API_BASE_URL = "http://localhost:5001/"    
 
 # USER_API_BASE_URL = "http://localhost:5004/"
+JWT_BASED_API_BASE_URL = "http://localhost:8002/"
 # USER_API_BASE_URL="http://usersapi-prod.ap-southeast-2.elasticbeanstalk.com/"
 
 #PRODUCT_CATEGORY_API_BASE_URL = "http://localhost:5001/"
@@ -72,6 +73,51 @@ class LoginForm(FlaskForm):
 @app.route('/')
 def index():
     return render_template("index.html")
+
+# Put this as another route inside your Fashion-website's app.py
+# This function essentially calls the service at localhost:8002 to generate our JSON-Web-Token (JWT)
+# We use this function to call the /api/token path of the django-jwt-api project and get the token
+def obtain_auth_token():
+    context = dict()
+    # Put this and store it in the post data variable
+    auth_credentials = {
+        "username": "barrakudha",
+        "password":"1234"
+    }
+ 
+    print(auth_credentials)
+ 
+    TOKEN_GENERATION_URL = JWT_BASED_API_BASE_URL + "api/token/"
+ 
+    headers = {
+        'Content-type':'application/json', 
+        'Accept':'application/json'
+    }
+ 
+    token_generation_response = requests.post(
+        url= TOKEN_GENERATION_URL,
+        headers=headers, 
+        json=auth_credentials
+    )
+    print(token_generation_response)
+    print(token_generation_response.status_code)
+    #print(login_received_login_info_response)
+ 
+    try:
+        if token_generation_response.status_code == 200:
+            token_generation_response_data = json.loads(token_generation_response.text)
+            # Get the information of the logged in user here
+            print(token_generation_response_data)
+            print(type(token_generation_response_data))
+            print("CHECK 1")            
+ 
+            return token_generation_response_data           
+        else:
+            # This response message must get passed to the front end registration form
+            return None
+    except:
+        print("DID it throw an exception??")
+        return None
 
 @app.route('/product')
 def product():
