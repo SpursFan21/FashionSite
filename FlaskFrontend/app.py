@@ -11,10 +11,11 @@ import stripe
 
 app = Flask(__name__)
 
-if 'USER_API_BASE_URL' in os.environ:
-    USER_API_BASE_URL=os.environ['USER_API_BASE_URL']
-else:
-    USER_API_BASE_URL = "http://localhost:5004/"
+import os
+
+# Check if the environment variable 'USER_API_BASE_URL' exists
+USER_API_BASE_URL = os.getenv('USER_API_BASE_URL', 'http://localhost:8000/')
+
 
 if 'PRODUCT_CATEGORY_API_BASE_URL' in os.environ:
     PRODUCT_CATEGORY_API_BASE_URL=os.environ['PRODUCT_CATEGORY_API_BASE_URL']
@@ -362,12 +363,12 @@ def register():
     if request.method == 'POST':
         try:
             # Grab data from the form
-            first_name = request.form['firstName']
-            last_name = request.form['lastName']
-            email = request.form['email']
-            password = request.form['password']
-            age = int(request.form['age'])
-            gender = request.form['gender-select']
+            first_name = request.form.get('firstName')
+            last_name = request.form.get('lastName')
+            email = request.form.get('email')
+            password = request.form.get('password')
+            age = int(request.form.get('age', 0))
+            gender = request.form.get('gender-select')
 
             # Validate data (basic example)
             if age <= 0:
@@ -389,7 +390,7 @@ def register():
             }
 
             # Send data to external API
-            REGISTER_NEW_USER_URL = USER_API_BASE_URL + "user"
+            REGISTER_NEW_USER_URL = f"{USER_API_BASE_URL}user/"
             register_new_user_response = requests.post(
                 url=REGISTER_NEW_USER_URL,
                 headers=headers,
@@ -399,7 +400,7 @@ def register():
             # Handle response
             if register_new_user_response.status_code == 201:
                 return jsonify({'success': True, 'message': 'User successfully registered'})
-            elif register_new_user_response.status_code == 200:
+            elif register_new_user_response.status_code == 400:  # Typically, a 400 status code for bad request or validation errors
                 return jsonify({'success': False, 'message': 'Sorry, a user with this email address already exists'})
             else:
                 return jsonify({'success': False, 'message': 'Whoops something went wrong while registering this user. Try again later'})
