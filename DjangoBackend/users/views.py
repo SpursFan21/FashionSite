@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer, UserSerializer
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]  # Allow any user to access this endpoint
+    authentication_classes = []  # Ensure no authentication is required
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -24,10 +27,12 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(generics.GenericAPIView):
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]  # Allow any user to access this endpoint
+    authentication_classes = []  # Ensure no authentication is required
 
     def post(self, request, *args, **kwargs):
         data = request.data
-        user = authenticate(username=data['username'], password=data['password'])
+        user = authenticate(username=data.get('username'), password=data.get('password'))
         if user:
             refresh = RefreshToken.for_user(user)
             return Response({

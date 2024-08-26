@@ -1,7 +1,8 @@
+# DjangoBackend/urls.py
 from django.contrib import admin
-from django.urls import path, include  # Import include to include app URLs
+from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('users.urls')),  # Include URLs from the users app
+    path('api/', include('users.urls')),  # Includes URLs from the users app
 ]

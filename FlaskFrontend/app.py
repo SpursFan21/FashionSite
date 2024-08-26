@@ -17,6 +17,7 @@ import os
 USER_API_BASE_URL = os.getenv('USER_API_BASE_URL', 'http://localhost:8000/')
 
 
+
 if 'PRODUCT_CATEGORY_API_BASE_URL' in os.environ:
     PRODUCT_CATEGORY_API_BASE_URL=os.environ['PRODUCT_CATEGORY_API_BASE_URL']
 else:
@@ -24,14 +25,7 @@ else:
 
 # USER_API_BASE_URL = "http://localhost:5004/"
 JWT_BASED_API_BASE_URL = "http://localhost:8002/"
-# USER_API_BASE_URL="http://usersapi-prod.ap-southeast-2.elasticbeanstalk.com/"
 
-#PRODUCT_CATEGORY_API_BASE_URL = "http://localhost:5001/"
-
-# PRODUCT_CATEGORY_API_BASE_URL = "http://api-products-prod.ap-southeast-2.elasticbeanstalk.com/"
-#app.config["SESSION_PERMANENT"] = False
-#app.config["SESSION_TYPE"] = "filesystem"
-#Session(app)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 stripe_keys = {
@@ -41,8 +35,7 @@ stripe_keys = {
 
 stripe.api_key = stripe_keys['secret_key']
 
-#Database Configuration
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+
 if 'RDS_DB_NAME' in os.environ:
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'postgresql://{username}:{password}@{host}:{port}/{database}'.format(
@@ -76,9 +69,7 @@ class LoginForm(FlaskForm):
 def index():
     return render_template("index.html")
 
-# Put this as another route inside your Fashion-website's app.py
-# This function essentially calls the service at localhost:8002 to generate our JSON-Web-Token (JWT)
-# We use this function to call the /api/token path of the django-jwt-api project and get the token
+
 def obtain_auth_token():
     context = dict()
     # Put this and store it in the post data variable
@@ -390,7 +381,7 @@ def register():
             }
 
             # Send data to external API
-            REGISTER_NEW_USER_URL = f"{USER_API_BASE_URL}user/"
+            REGISTER_NEW_USER_URL = f"{USER_API_BASE_URL}api/register/"
             register_new_user_response = requests.post(
                 url=REGISTER_NEW_USER_URL,
                 headers=headers,
@@ -455,21 +446,6 @@ def single_product(product_id):
         print("Whoops something went wrong here!")    
     return render_template("product_details.html")
 
-# @app.route('/sale_dresses')
-# def sale_dresses():
-#     return render_template("sale_dresses.html")
-
-# @app.route('/sale_tops')
-# def sale_tops():
-#     return render_template("sale_tops.html")
-
-# @app.route('/sale_skirts')
-# def sale_skirts():
-#     return render_template("sale_skirts.html")
-
-# @app.route('/sale_jumpsuits')
-# def sale_jumpsuits():
-#     return render_template("sale_jumpsuits.html")
 
 @app.route('/wishlist')
 def wishlist():
